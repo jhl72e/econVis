@@ -45,21 +45,23 @@
                       
                     </div>
 
-                    <!--GENAI-->
+                    <!--GENAI--> 
                     <div class="bg-success rounded p-3 text-white" style="height: 30%;">
                    
-                        <label for="country-select" class="form-label">국가 선택:</label>
+                        <label for="currentCountrySelector" class="form-label">Your current Country is</label>
                         <select id="currentCountrySelector" class="form-select"></select>
+
+                        <label for="salaryInput" class="form-label">Your Income is (per month):</label>
+                        <input type="number" id="salaryInput" class="form-control" placeholder="3000 (USD)">
                     </div>
                     <!------------->
 
-
-                    
-         
+                
             </div>
             <div class="col-4 h-100">
                 <div class="bg-primary rounded p-3 mb-3 text-white" style="height: 20%;">
-                    Left Top (60%)
+                    <div> Current Country : </div> <span id="targetcountrytext"></span>
+                    <svg id="nationinfo-svg" class="col-11"></svg>
                 </div>
 
                 <div class="bg-success rounded p-3 text-white" style="height: 75%;">
