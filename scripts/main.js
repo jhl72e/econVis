@@ -28,7 +28,7 @@ let worldData;
 let nationInfoVis;
 
 let ni_xAxis, ni_yAxis, ni_attributes;
-let ni_currentLine, ni_targetLine;
+let ni_currentBar, ni_targetBar;
 
 let targetCountryText;
 
@@ -153,111 +153,70 @@ function initNationInfoSection()
 
     ni_xAxis = nationInfoSvg.append("g");
     ni_yAxis = nationInfoSvg.append("g");
-    ni_currentLine = nationInfoSvg.append("g");
-    ni_targetLine = nationInfoSvg.append("g");
+    ni_currentBar = nationInfoSvg.append("g");
+    ni_targetBar = nationInfoSvg.append("g");
 
-    ni_attributes = Object.keys(dataPerNation[currentCountry]).filter(function(d) {
-        if(d != "coliAndRent" && d != "rank")
-        {
-            return d;
-        }
-     });
-
-
-
-     console.log(ni_attributes)
 
     ni_xAxis.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`)
-    ni_currentLine.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`);
-    ni_targetLine.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`);
+    
+    ni_yAxis.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`)
+    ni_currentBar.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`);
+    ni_targetBar.attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`);
 
 
 }
-
-// function updateNationInfoSection()
-// {
-//     const xScale = d3.scaleBand()
-//     .domain(ni_attributes)
-//     .padding(1)
-//     .range([nationInfoMargin.left, width - nationInfoMargin.right]);
-
-//     const yScale = d3.scaleLinear()
-//     .domain([0,200])
-//     .range([height - nationInfoMargin.bottom, nationInfoMargin.top]);
-
-//     nationInfoSvg
-//     .selectAll("path")
-//     .data(data)
-//     .join("path")
-//     .attr("d",  ()=>d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; })))
-//     .style("fill", "none")
-//     .style("stroke", "#69b3a2")
-//     .style("opacity", 0.5)
-
-//     nationInfoSvg.selectAll("axis")
-//     // For each dimension of the dataset I add a 'g' element:
-//     .data(dimensions)
-//     .join("axis")
-//     .append("g")
-//     // I translate this element to its right position on the x axis
-//     .attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`)
-//     // And I build the axis with the call function
-//     .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
-//     // Add axis title
-//     .append("text")
-//       .style("text-anchor", "middle")
-//       .attr("y", -9)
-//       .text(function(d) { return d; })
-//       .style("fill", "black")
-
-//     targetCountryText.innerHTML = targetCountry;
-// }
 
 function updateNationInfoSection()
 {
-    const xScale = d3.scalePoint()
-        .domain(ni_attributes)
-        .range([0, nationInfoSize.width]);
 
-    const yScale = d3.scaleLinear()
-        .domain([0, 200])
-        .range([nationInfoSize.height, 0]);
+    //GENAI-------------------
+    const currentBarData = Object.entries(dataPerNation[currentCountry])
+    .filter(([key, _]) => key !== "coliAndRent" && key !== "rank")
+    .map(([key, value]) => ({ attribute: key, value: value }));
+    //----------------------------
 
-    const lineGenerator = d3.line()
-        .x(d => xScale(d))
-        .y(d => yScale(dataPerNation[currentCountry][d]));
 
-    const targetLineGenerator = d3.line()
-        .x(d => xScale(d))
-        .y(d => yScale(dataPerNation[targetCountry]?.[d]));
+    const xScale = d3.scaleLinear()
+    .domain([0, 200])
+    .rangeRound([nationInfoMargin.left, nationInfoSize.height - nationInfoMargin.top]);
+
+
+    const yScale = d3.scaleBand()
+    .domain(currentBarData.map(d=>d.attribute))
+    .rangeRound([nationInfoMargin.top, nationInfoSize.height - nationInfoMargin.bottom])
+    .padding(0.1);
+
+
+    ni_currentBar.selectAll("rect")
+    .data(currentBarData)
+    .join("rect")
+    .attr("fill",  (d) => d3.schemeRdBu[3][d.value > 0 ? 2 : 0])
+    .attr("x", (d)=>xScale(Math.min(d.value, 0)))
+    .attr("y", (d)=>yScale(d.attribute))
+    .attr("width", (d)=>Math.abs(xScale(d.value))) //여기에 perception 함수 적용 
+    .attr("height", yScale.bandwidth());
+
+
+    
 
     ni_xAxis
-        .attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoSize.height})`)
-        .call(d3.axisBottom(xScale));
+    .attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top + nationInfoSize.height})`)
+    .call(d3.axisTop(scaleX).ticks(width / 80).tickFormat(tickFormat))
+    .call(g => g.selectAll(".tick line").clone()
+          .attr("y2", nationInfoSize.height - nationInfoMargin.top - nationInfoMargin.bottom)
+          .attr("stroke-opacity", 0.1))
+    .call(g => g.select(".domain").remove());
 
     ni_yAxis
-        .attr("transform", `translate(${nationInfoMargin.left}, 0)`)
-        .call(d3.axisLeft(yScale));
+    .attr("transform", `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`)
+    .call(d3.axisLeft(scaleY).tickSize(0).tickPadding(6))
+    .call(g => g.selectAll(".tick text").filter((d, i) => data[i].value < 0)
+        .attr("text-anchor", "start")
+        .attr("x", 6));
 
-    ni_currentLine.selectAll("path")
-        .data([ni_attributes])
-        .join("path")
-        .attr("d", lineGenerator)
-        .attr("stroke", "steelblue")
-        .attr("fill", "none");
-
-    if (targetCountry && dataPerNation[targetCountry]) {
-        ni_targetLine.selectAll("path")
-            .data([ni_attributes])
-            .join("path")
-            .attr("d", targetLineGenerator)
-            .attr("stroke", "tomato")
-            .attr("fill", "none");
-    }
-
-
-    targetCountryText.innerText = targetCountry || "";
+    targetCountryText.innerHTML = targetCountry;
 }
+
 //---------------------------------------------------------------------
 
 
