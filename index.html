@@ -47,16 +47,63 @@
 
                     <!--GENAI--> 
                     <div class="bg-success rounded p-3 text-white" style="height: 30%;">
-                   
-                        <label for="currentCountrySelector" class="form-label">Your current Country is</label>
-                        <select id="currentCountrySelector" class="form-select"></select>
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-4">
+                                <label for="currentCountrySelector" class="form-label mb-0">Your current Country:</label>
+                            </div>
+                            <div class="col-8">
+                                <select id="currentCountrySelector" class="form-select"></select>
+                            </div>
+                        </div>
 
-                        <label for="salaryInput" class="form-label">Your Income is (per month):</label>
-                        <input type="number" id="salaryInput" class="form-control" placeholder="3000 (USD)">
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-4">
+                                <label for="salaryInput" class="form-label mb-0">Your Income (USD):</label>
+                            </div>
+                            <div class="col-8">
+                                <input type="number" id="salaryInput" class="form-control" placeholder="3000">
+                            </div>
+                        </div>
+
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-2">
+                                <label for="mealPriceInput" class="form-label mb-0">Price per meal:</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="range" class="form-range" min="1" max="100" value="10" id="mealPriceInput" step="1" 
+                                    oninput="document.getElementById('mealPriceValue').textContent = this.value">
+                            </div>
+                            <div class="col-1">
+                                <span id="mealPriceValue" class="small">10</span>
+                            </div>
+
+                            <div class="col-2">
+                                <label for="houseSizeInput" class="form-label mb-0">House size:</label>
+                            </div>
+                            <div class="col-3">
+                                <input type="range" class="form-range" min="10" max="200" value="60" id="houseSizeInput" step="1" 
+                                    oninput="document.getElementById('houseSizeValue').textContent = this.value">
+                            </div>
+                            <div class="col-1">
+                                <span id="houseSizeValue" class="small">60</span>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <label for="grocerySpendInput" class="form-label mb-0">grocery spenditure(per month):</label>
+                            </div>
+                            <div class="col-7">
+                                <input type="range" class="form-range" min="10" max="200" value="60" id="grocerySpendInput" step="1" 
+                                    oninput="document.getElementById('grocerySpendInput').textContent = this.value">
+                            </div>
+                            <div class="col-1">
+                                <span id="grocerySpendInput" class="small">50</span>
+                            </div>
+                        </div>
                     </div>
                     <!------------->
 
-                
             </div>
             <div class="col-4 h-100">
                 <div class="bg-primary rounded p-2 mb-3 text-white" style="height: 40%;">
@@ -67,13 +114,22 @@
                 <div class="bg-success rounded p-2 text-white" style="height: 55%;">
                     <div>In Target Country, you're life will look like...</div>
                     <!--GENAI--------------------->
-                    <div class="row mb-2" style="height: 50%">
-                        <div class="col-6 bg-primary text-white p-2 text-center">1</div>
-                        <div class="col-6 bg-success text-white p-2 text-center">2</div>
+                    <div class="row mb-1" style="height: 50%">
+                        <div class="col-12 bg-primary text-white p-2">
+                            <span>Income</span>
+                            <svg id="lpp-svg"></svg>
+                        </div>
+                      
                       </div>
                       <div class="row"  style="height: 50%">
-                        <div class="col-6 bg-warning text-white p-2 text-center">3</div>
-                        <div class="col-6 bg-danger text-white p-2 text-center">4</div>
+                        <div class="col-6 bg-danger  text-white p-2 text-center">
+                            <span>Outdoor meals</span>
+                            <svg id="meal-svg"></svg>
+                        </div>
+                        <div class="col-6 bg-success text-white p-2 text-center">
+                            <span>House</span>
+                            <svg id="rent-svg"></svg>
+                        </div>
                       </div>
                     <!----------------------->
                 </div>
