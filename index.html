@@ -105,37 +105,42 @@
                     <!------------->
 
             </div>
-            <div class="col-4 h-100">
-                <div class="bg-primary rounded p-2 mb-3 text-white" style="height: 40%;">
-                    <div> Current Country : </div> <span id="targetcountrytext"></span>
-                    <svg id="nationinfo-svg" class="col-11"></svg>
+    <!--GENAI--------------------->
+            <div class="col-4 h-100 d-flex flex-column">
+                <!-- 상단 40% -->
+                <div class="bg-primary rounded mb-3 p-2 text-white d-flex flex-column" style="flex: 4 1 0; min-height: 0; overflow: hidden;">
+                    <div class="mb-1" style="font-size: 0.9rem;" id="targetcountrytext"></div>
+                  
+                    <div class="flex-grow-1 d-flex" style="min-height: 0; overflow: hidden;">
+                      <svg id="nationinfo-svg" class="w-100 h-100" style="border: 1px solid black; display: block; object-fit: contain;"></svg>
+                    </div>
+                  </div>
+                <!-- 하단 60% -->
+                <div class="bg-success rounded p-2 text-white d-flex flex-column" style="flex: 6 1 0; overflow: hidden; min-height: 0;">
+                  <div class="mb-1">In Target Country, your life will look like...</div>
+                  
+                  <!-- Top: Income -->
+                  <div class="d-flex flex-grow-1 flex-column">
+                    <div class="bg-primary text-white p-2 d-flex flex-column align-items-center flex-grow-1" style="min-height: 0;">
+                      <span>Income</span>
+                      <svg id="lpp-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                    </div>
+                  </div>
+              
+                  <!-- Bottom: Meals + House -->
+                  <div class="d-flex flex-grow-1" style="min-height: 0;">
+                    <div class="w-50 bg-danger text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                      <span>Outdoor meals</span>
+                      <svg id="meal-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                    </div>
+                    <div class="w-50 bg-success text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                      <span>House</span>
+                      <svg id="rent-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                    </div>
+                  </div>
                 </div>
-
-                <div class="bg-success rounded p-2 text-white" style="height: 55%;">
-                    <div>In Target Country, you're life will look like...</div>
-                    <!--GENAI--------------------->
-                    <div class="row mb-1" style="height: 50%">
-                        <div class="col-12 bg-primary text-white p-2">
-                            <span>Income</span>
-                            <svg id="lpp-svg"></svg>
-                        </div>
-                      
-                      </div>
-                      <div class="row"  style="height: 50%">
-                        <div class="col-6 bg-danger  text-white p-2 text-center">
-                            <span>Outdoor meals</span>
-                            <svg id="meal-svg"></svg>
-                        </div>
-                        <div class="col-6 bg-success text-white p-2 text-center">
-                            <span>House</span>
-                            <svg id="rent-svg"></svg>
-                        </div>
-                      </div>
-                    <!----------------------->
-                </div>
-     
-            </div>
-        </div>
+              </div>
+    <!----------------------->
     </div>
 
 </body>
