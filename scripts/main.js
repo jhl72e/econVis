@@ -892,8 +892,6 @@ function computeLayoutFromContainer() {
   // LPP
   const lppRect = getRect("lpp-svg");
   lppVisMargin = getMargin(lppRect);
-  lppVisMargin.left += 40;
-  lppVisMargin.bottom += 2;
   lppVisMargin.right = 0;
   lppVisSize = {
     width: lppRect.width - lppVisMargin.left - lppVisMargin.right,
@@ -911,7 +909,6 @@ function computeLayoutFromContainer() {
   // Meal
   const mealRect = getRect("meal-svg");
   mealVisMargin = getMargin(mealRect);
-  mealVisMargin.bottom -= 20;
   mealVisSize = {
     width: mealRect.width - mealVisMargin.left - mealVisMargin.right,
     height: mealRect.height - mealVisMargin.top - mealVisMargin.bottom,
