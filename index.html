@@ -60,17 +60,21 @@
                             <div class="col-4">
                                 <label for="salaryInput" class="form-label mb-0">Your Income (USD):</label>
                             </div>
-                            <div class="col-8">
-                                <input type="number" id="salaryInput" class="form-control" placeholder="3000">
+                            <div class="col-7">
+                                <input type="range" class="form-range" min="1000" max="10000" value="2000" id="salaryInput" step="1" 
+                                    oninput="document.getElementById('salaryValue').textContent = this.value">
+                            </div>
+                            <div class="col-1">
+                                <span id="salaryValue" class="small">2000</span>
                             </div>
                         </div>
 
                         <div class="row mb-2 align-items-center">
                             <div class="col-2">
-                                <label for="mealPriceInput" class="form-label mb-0">Price per meal:</label>
+                                <label for="mealPriceInput" class="form-label mb-0">Price spent per meal(USD):</label>
                             </div>
                             <div class="col-3">
-                                <input type="range" class="form-range" min="1" max="100" value="10" id="mealPriceInput" step="1" 
+                                <input type="range" class="form-range" min="1" max="80" value="10" id="mealPriceInput" step="1" 
                                     oninput="document.getElementById('mealPriceValue').textContent = this.value">
                             </div>
                             <div class="col-1">
@@ -78,7 +82,7 @@
                             </div>
 
                             <div class="col-2">
-                                <label for="houseSizeInput" class="form-label mb-0">House size:</label>
+                                <label for="houseSizeInput" class="form-label mb-0">House size(m^2):</label>
                             </div>
                             <div class="col-3">
                                 <input type="range" class="form-range" min="10" max="200" value="60" id="houseSizeInput" step="1" 
@@ -88,19 +92,6 @@
                                 <span id="houseSizeValue" class="small">60</span>
                             </div>
                         </div>
-
-                        <div class="row align-items-center">
-                            <div class="col-4">
-                                <label for="grocerySpendInput" class="form-label mb-0">grocery spenditure(per month):</label>
-                            </div>
-                            <div class="col-7">
-                                <input type="range" class="form-range" min="10" max="200" value="60" id="grocerySpendInput" step="1" 
-                                    oninput="document.getElementById('grocerySpendInput').textContent = this.value">
-                            </div>
-                            <div class="col-1">
-                                <span id="grocerySpendInput" class="small">50</span>
-                            </div>
-                        </div>
                     </div>
                     <!------------->
 
@@ -108,37 +99,46 @@
     <!--GENAI--------------------->
             <div class="col-4 h-100 d-flex flex-column">
                 <!-- 상단 40% -->
-                <div class="bg-primary rounded mb-3 p-2 text-white d-flex flex-column" style="flex: 4 1 0; min-height: 0; overflow: hidden;">
-                    <div class="mb-1" style="font-size: 0.9rem;" id="targetcountrytext"></div>
+                <div class="bg-primary rounded mb-3 p-2 text-white d-flex flex-column" style="flex: 3 1 0; min-height: 0; overflow: hidden;">
+                    <div class="mb-1" style="font-size: 0.9rem;" id="targetcountrytext">    </div>
                   
                     <div class="flex-grow-1 d-flex" style="min-height: 0; overflow: hidden;">
                       <svg id="nationinfo-svg" class="w-100 h-100" style="border: 1px solid black; display: block; object-fit: contain;"></svg>
                     </div>
                   </div>
                 <!-- 하단 60% -->
-                <div class="bg-success rounded p-2 text-white d-flex flex-column" style="flex: 6 1 0; overflow: hidden; min-height: 0;">
-                  <div class="mb-1">In Target Country, your life will look like...</div>
+                 
+                <div class="bg-success rounded p-2 text-white d-flex flex-column" style="flex: 7 1 0; overflow: hidden; min-height: 0;">
+  
+                    <!-- Title -->
+                    <div class="mb-1">
+                        Economic capability 
+                    </div>
                   
-                  <!-- Top: Income -->
-                  <div class="d-flex flex-grow-1 flex-column">
-                    <div class="bg-primary text-white p-2 d-flex flex-column align-items-center flex-grow-1" style="min-height: 0;">
-                      <span>Income</span>
-                      <svg id="lpp-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                    <!-- Top: Income (비율 2) -->
+                    <div class="d-flex flex-column" style="flex: 3 1 0; min-height: 0;">
+                      <div class="bg-primary text-white p-1 d-flex flex-column align-items-center flex-grow-1" style="min-height: 0;">
+                        <span id="capabilitytranslateText">Income</span>
+                        <svg id="lpp-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                      </div>
                     </div>
+                  
+                    <!-- Bottom: Meals + House (비율 3) -->
+                    <div class="d-flex" style="flex: 3 1 0; min-height: 0;">
+                      <div class="w-50 bg-success text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                        <span>House Size</span>
+                        <svg id="rent-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                      </div>
+                      <div class="w-50 bg-danger text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                        <span>Meal Affordance</span>
+                        <svg id="meal-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
+                      </div>
+                    </div>
+                  
                   </div>
-              
-                  <!-- Bottom: Meals + House -->
-                  <div class="d-flex flex-grow-1" style="min-height: 0;">
-                    <div class="w-50 bg-danger text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
-                      <span>Outdoor meals</span>
-                      <svg id="meal-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
-                    </div>
-                    <div class="w-50 bg-success text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
-                      <span>House</span>
-                      <svg id="rent-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
-                    </div>
-                  </div>
-                </div>
+                  
+
+
               </div>
     <!----------------------->
     </div>
