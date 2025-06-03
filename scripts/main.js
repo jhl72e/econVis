@@ -136,7 +136,7 @@ function initMapSection() {
 
   mapLegend = mapSvg
     .append("g")
-    .attr("transform", `translate(${width - width / 7}, ${height + 30})`);
+    .attr("transform", `translate(${width - width / 10}, ${height * 1.2})`);
 
   mapLegend
     .selectAll("rect")
@@ -156,6 +156,7 @@ function initMapSection() {
     .attr("y", (d, i) => 9 + i * 20)
     .style("font-size", "12px")
     .text((d) => d);
+
   mapSvg.call(
     d3
       .zoom()
@@ -562,9 +563,13 @@ function updateLppVis() {
   );
 
   const drawData = [currentLPP, targetLPP];
-  const additionalGraphMargin = 21;
+  const additionalGraphMargin = lppVisMargin.left * 0.1;
   const barHeight = 20;
-  const xScale = d3.scaleLinear().domain([0, 20000]).range([0, width]).nice();
+  const xScale = d3
+    .scaleLinear()
+    .domain([0, Math.max(d3.max(drawData), 20000)])
+    .range([0, width])
+    .nice();
 
   const yScale = d3
     .scaleBand()
@@ -631,7 +636,7 @@ function updateLppVis() {
 }
 
 function updateRentVis() {
-  const maxArea = 200;
+  const maxArea = 250;
   const currentArea = currentRentSize;
   const targetArea = rentSizeConversion(
     currentRentSize,
@@ -639,14 +644,14 @@ function updateRentVis() {
     dataPerNation[targetCountry].rent
   );
 
-  const iconSize = 100;
+  const iconSize = rentVisSize.width / 2;
   const scale = d3.scaleSqrt().domain([0, maxArea]).range([0, iconSize]);
 
   const currentSize = scale(currentArea);
   const targetSize = scale(targetArea);
 
-  const anchorX = 10;
-  const anchorY = rentVisSize.height - 10;
+  const anchorX = rentVisMargin.left / 5;
+  const anchorY = rentVisSize.height;
 
   ev_rent_currentArea
     .selectAll("rect")
@@ -661,6 +666,15 @@ function updateRentVis() {
     .attr("stroke", "#333")
     .attr("stroke-width", 2);
 
+  ev_rent_currentArea
+    .selectAll("text")
+    .data([currentArea])
+    .join("text")
+    .attr("x", anchorX + currentSize)
+    .attr("y", anchorY - currentSize)
+    .style("font-size", "12px")
+    .text(currentArea + " sqft(current)");
+
   ev_rent_targetArea
     .selectAll("rect")
     .data([targetArea])
@@ -673,6 +687,15 @@ function updateRentVis() {
     .attr("opacity", 0.5)
     .attr("stroke", "#333")
     .attr("stroke-dasharray", "4 2");
+
+  ev_rent_targetArea
+    .selectAll("text")
+    .data([currentArea])
+    .join("text")
+    .attr("x", anchorX)
+    .attr("y", anchorY - targetSize)
+    .style("font-size", "12px")
+    .text(Math.round(targetArea) + " sqft(target)");
 
   rentLegend
     .selectAll("rect")
@@ -716,8 +739,8 @@ function updateMealVis() {
   ];
 
   const maxFood = 8;
-  const iconSize = 32;
-  const yMargin = 22;
+  const iconSize = mealVisSize.height * 0.2;
+  const yMargin = iconSize * 0.5;
 
   //변환 라이브러리 사용시 여기서 ev_meal_data를 변환에 넣어서 새로운 glpyh 그리기용 scale 함수 다시 만들기
 
@@ -732,7 +755,7 @@ function updateMealVis() {
     .range([0, mealVisSize.height]);
 
   //GENAI--------------------------
-  const currentFoodCount = Math.ceil(ev_meal_data[0]);
+  const currentFoodCount = Math.round(ev_meal_data[0]);
   const currentFoodData = d3.range(currentFoodCount);
   //-----------------------------------
 
@@ -764,7 +787,7 @@ function updateMealVis() {
     .attr("height", curIcon.iconSize);
 
   //GENAI--------------------------
-  const targetFoodCount = Math.ceil(ev_meal_data[1]);
+  const targetFoodCount = Math.round(ev_meal_data[1]);
   const targetFoodData = d3.range(targetFoodCount);
   //-----------------------------------
 
@@ -807,14 +830,14 @@ function updateMealVis() {
     .attr("x1", midX)
     .attr("y1", 0)
     .attr("x2", midX)
-    .attr("y2", mealVisSize.height - 13)
+    .attr("y2", mealVisSize.height)
     .attr("stroke", "#888")
     .attr("stroke-width", 2)
     .attr("stroke-dasharray", "5,5");
   //--------------------------------------------------
 
   ev_meal_xAxis
-    .attr("transform", `translate(${0}, ${mealVisSize.height - 12})`)
+    .attr("transform", `translate(${0}, ${mealVisSize.height})`)
     .call(d3.axisBottom(ev_meal_xScale).ticks(2));
 }
 //---------------------------------------------------------------------------
