@@ -37,12 +37,12 @@
         <div class="row h-100">
             <div class="col-8 h-100">
                     <div class="bg-primary rounded p-3 mb-3 text-white" style="height: 65%;">
-                        <div class="row h-100">
-                            <svg id="map-svg" class="col-11"></svg>
-                            <div id="tooltip" class="info-box"></div>
-                            <div id="legend" class="col-1" class="legend"></div>
+                        <div class="mb-1 fw-bold"style="height: 5%"> 
+                            <div class="m-0 text-left">Perceived Economic Visualizer</div>
                         </div>
-                      
+                        <div class="row" style="height: 95%">
+                            <svg id="map-svg" class="col-12"></svg>
+                        </div>
                     </div>
 
                     <!--GENAI--> 
@@ -82,14 +82,14 @@
                             </div>
 
                             <div class="col-2">
-                                <label for="houseSizeInput" class="form-label mb-0">House size(m^2):</label>
+                                <label for="houseSizeInput" class="form-label mb-0">House size(sqft):</label>
                             </div>
                             <div class="col-3">
-                                <input type="range" class="form-range" min="10" max="200" value="60" id="houseSizeInput" step="1" 
+                                <input type="range" class="form-range" min="5" max="60" value="5" id="houseSizeInput" step="1" 
                                     oninput="document.getElementById('houseSizeValue').textContent = this.value">
                             </div>
                             <div class="col-1">
-                                <span id="houseSizeValue" class="small">60</span>
+                                <span id="houseSizeValue" class="small">5</span>
                             </div>
                         </div>
                     </div>
@@ -110,13 +110,12 @@
                  
                 <div class="bg-success rounded p-2 text-white d-flex flex-column" style="flex: 7 1 0; overflow: hidden; min-height: 0;">
   
-                    <!-- Title -->
                     <div class="mb-1">
                         Economic capability 
                     </div>
                   
                     <!-- Top: Income (비율 2) -->
-                    <div class="d-flex flex-column" style="flex: 3 1 0; min-height: 0;">
+                    <div class="d-flex flex-column" style="flex: 2 1 0; min-height: 0;">
                       <div class="bg-primary text-white p-1 d-flex flex-column align-items-center flex-grow-1" style="min-height: 0;">
                         <span id="capabilitytranslateText">Income</span>
                         <svg id="lpp-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
@@ -124,12 +123,12 @@
                     </div>
                   
                     <!-- Bottom: Meals + House (비율 3) -->
-                    <div class="d-flex" style="flex: 3 1 0; min-height: 0;">
-                      <div class="w-50 bg-success text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                    <div class="d-flex" style="flex: 4 1 0; min-height: 0;">
+                      <div class="w-50 bg-primary text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
                         <span>House Size</span>
                         <svg id="rent-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
                       </div>
-                      <div class="w-50 bg-danger text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
+                      <div class="w-50 bg-primary text-white p-2 text-center d-flex flex-column" style="min-height: 0;">
                         <span>Meal Affordance</span>
                         <svg id="meal-svg" class="w-100 flex-grow-1" style="border: 1px solid black;"></svg>
                       </div>

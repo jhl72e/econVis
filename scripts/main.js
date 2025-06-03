@@ -9,9 +9,14 @@ let rentSvg;
 let mealSvg;
 
 //country data variables
-let currentCountry = "Switzerland";
+let currentCountry = "South Korea";
 let targetCountry = "Canada";
-let foodPrice = 10;
+let foodPrice = 15;
+
+const legendData = [
+  { label: currentCountry, color: "#6B42C1" },
+  { label: targetCountry, color: "#F5A623" },
+];
 
 //money variables
 let currentIncome = 3000;
@@ -23,6 +28,7 @@ let mapVis;
 let path;
 let projection;
 let worldData;
+let mapLegend;
 
 //select variable
 
@@ -42,6 +48,7 @@ let ev_lpp_bars;
 let ev_lpp_connectLine;
 
 let ev_rent_currentArea, ev_rent_targetArea;
+let rentLegend;
 
 let ev_meal_xAxis, ev_meal_yAxis;
 
@@ -126,6 +133,37 @@ function initMapSection() {
     .translate([width / 2, height / 2]);
 
   path = d3.geoPath().projection(projection);
+
+  mapLegend = mapSvg
+    .append("g")
+    .attr("transform", `translate(${width - width / 7}, ${height + 30})`);
+
+  mapLegend
+    .selectAll("rect")
+    .data(["#78f57a", "#e6475c"])
+    .join("rect")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("x", (d, i) => 0)
+    .attr("y", (d, i) => i * 20)
+    .style("fill", (d) => d);
+
+  mapLegend
+    .selectAll("text")
+    .data(["Higher Living Cost", "Lower Living Cost"])
+    .join("text")
+    .attr("x", (d, i) => 15)
+    .attr("y", (d, i) => 9 + i * 20)
+    .style("font-size", "12px")
+    .text((d) => d);
+  mapSvg.call(
+    d3
+      .zoom()
+      .scaleExtent([1, 8])
+      .on("zoom", (event) => {
+        mapVis.attr("transform", event.transform);
+      })
+  );
 }
 //------------------------------------------
 
@@ -140,8 +178,11 @@ function updateMapSection() {
       return genCountryColor(d.properties.name);
     })
     .on("click", function (event, d) {
-      targetCountry = d.properties.name;
-      update();
+      if (dataPerNation[d.properties.name]) {
+        targetCountry = d.properties.name;
+        legendData[0].label = targetCountry;
+        update();
+      }
     });
 }
 
@@ -149,15 +190,21 @@ async function getGeoJsonData() {
   worldData = await d3.json(
     "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json"
   );
+  //GENAI----------------------------
+  worldData.features = worldData.features.filter(
+    (feature) => feature.properties.name !== "Bermuda"
+  );
+  //-----------------------------
 }
 
 function genCountryColor(country) {
   const target = dataPerNation[country];
   const current = dataPerNation[currentCountry];
 
-  if (!target || !current) return "#a6cee3";
-
-  return target.lpp > current.lpp ? "#FFFFFF" : "#FEB24C";
+  if (!target || !current) {
+    return "#ffffff";
+  }
+  return target.lpp > current.lpp ? "#78f57a" : "#e6475c";
 }
 
 //-------------------------------------------------------------------
@@ -217,6 +264,7 @@ function selectCountry() {
 
   selectBox.addEventListener("change", (e) => {
     currentCountry = e.target.value;
+    legendData[0].label = currentCountry;
     update();
   });
 }
@@ -250,11 +298,37 @@ function initNationInfoSection() {
   );
 }
 
-//GENAI-------------------------
+function initNationInfoSection() {
+  targetCountryText = document.getElementById("targetcountrytext");
+
+  ni_allGraphs = nationInfoSvg.append("g");
+  ni_xAxis = ni_allGraphs.append("g");
+  ni_yAxis = ni_allGraphs.append("g");
+  ni_currentBar = ni_allGraphs.append("g");
+  ni_targetBar = ni_allGraphs.append("g");
+
+  ni_xAxis.attr(
+    "transform",
+    `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`
+  );
+
+  ni_yAxis.attr(
+    "transform",
+    `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`
+  );
+  ni_currentBar.attr(
+    "transform",
+    `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`
+  );
+  ni_targetBar.attr(
+    "transform",
+    `translate(${nationInfoMargin.left}, ${nationInfoMargin.top})`
+  );
+}
+
+//GENAI----------------------------------------
 function updateNationInfoSection() {
   ni_allGraphs.selectAll("*").remove();
-  ni_currentPoly.selectAll("*").remove();
-  ni_targetPoly.selectAll("*").remove();
   const width =
     nationInfoSize.width - nationInfoMargin.left - nationInfoMargin.right;
   const height =
@@ -263,7 +337,7 @@ function updateNationInfoSection() {
 
   ni_allGraphs.attr(
     "transform",
-    `translate(${width / 2 + nationInfoMargin.left + 5}, ${
+    `translate(${width / 2 + nationInfoMargin.left}, ${
       height / 2 + nationInfoMargin.top
     })`
   );
@@ -367,7 +441,6 @@ function updateNationInfoSection() {
         .style("font-size", "12px")
         .text(featureLabels[i]);
     }
-    // Add feature labels
   });
 
   function drawSpiderPath(data, color, opacity) {
@@ -390,27 +463,18 @@ function updateNationInfoSection() {
   }
 
   drawSpiderPath(baseData, "#ddd", 0.1);
-  drawSpiderPath(currentData, "#ff6b6b", 0.5);
+  drawSpiderPath(currentData, "#6B42C1", 0.5);
   if (targetCountry) {
-    drawSpiderPath(targetData, "#4ecdc4", 0.5);
+    drawSpiderPath(targetData, "#F5A623", 0.5);
   }
 
-  ni_legend.attr(
-    "transform",
-    `translate(${nationInfoSize.width - 140}, ${-nationInfoSize.height + 100})`
-  );
-
-  const legendData = [
-    { label: "Base (100)", color: "#ddd" },
-    { label: currentCountry, color: "#ff6b6b" },
-  ];
-
-  if (targetCountry) {
-    legendData.push({ label: targetCountry, color: "#4ecdc4" });
-  }
+  // Add legend
+  const legend = ni_allGraphs
+    .append("g")
+    .attr("transform", `translate(${width / 2 - 30}, ${-height / 2 - 10})`);
 
   legendData.forEach((d, i) => {
-    const legendRow = ni_legend
+    const legendRow = legend
       .append("g")
       .attr("transform", `translate(0, ${i * 20})`);
 
@@ -428,9 +492,7 @@ function updateNationInfoSection() {
       .text(d.label);
   });
 
-  targetCountryText.innerHTML = `Target Country: ${
-    targetCountry || "Select a country"
-  }`;
+  targetCountryText.innerHTML = targetCountry || "Select a country";
 }
 //-------------------------------------------
 
@@ -459,6 +521,8 @@ function initEconVisSection() {
   ev_rent_currentArea = initEachEconGraph(rentSvg, rentVisMargin);
   ev_rent_targetArea = initEachEconGraph(rentSvg, rentVisMargin);
 
+  rentLegend = rentSvg.append("g").attr("transform", `translate(${5}, ${5})`);
+
   //-------------
 
   //restaurant-------------
@@ -471,7 +535,6 @@ function initEconVisSection() {
 
   //-------------------
 }
-
 function initEachEconGraph(group, margin) {
   return group
     .append("g")
@@ -483,10 +546,9 @@ function updateEconVisSection() {
   updateRentVis();
   updateMealVis();
 
-  econVisTitleText.innerHTML = `Translated from ${targetCountry} to ${currentCountry}`;
+  econVisTitleText.innerHTML = `${targetCountry} to ${currentCountry}`;
 }
 
-//lpp 다시 해야함
 function updateLppVis() {
   const width = lppVisSize.width - lppVisMargin.left - lppVisMargin.right;
   const height = lppVisSize.height - lppVisMargin.top - lppVisMargin.bottom;
@@ -499,7 +561,6 @@ function updateLppVis() {
     dataPerNation[targetCountry].coli
   );
 
-  console.log(currentIncome);
   const drawData = [currentLPP, targetLPP];
   const additionalGraphMargin = 21;
   const barHeight = 20;
@@ -549,7 +610,7 @@ function updateLppVis() {
     )
     .attr("width", (d) => xScale(d))
     .attr("height", barHeight)
-    .attr("fill", "#ff6b6b");
+    .attr("fill", (d, i) => (i == 0 ? "#6B42C1" : "#F5A623"));
 
   ev_lpp_bars
     .selectAll("text")
@@ -595,7 +656,7 @@ function updateRentVis() {
     .attr("y", anchorY - currentSize)
     .attr("width", currentSize)
     .attr("height", currentSize)
-    .attr("fill", "#4CAF50")
+    .attr("fill", "#6B42C1")
     .attr("opacity", 0.9)
     .attr("stroke", "#333")
     .attr("stroke-width", 2);
@@ -608,10 +669,29 @@ function updateRentVis() {
     .attr("y", anchorY - targetSize)
     .attr("width", targetSize)
     .attr("height", targetSize)
-    .attr("fill", "#FFC107")
+    .attr("fill", "#F5A623")
     .attr("opacity", 0.5)
     .attr("stroke", "#333")
     .attr("stroke-dasharray", "4 2");
+
+  rentLegend
+    .selectAll("rect")
+    .data(legendData)
+    .join("rect")
+    .attr("width", 10)
+    .attr("height", 10)
+    .attr("x", (d, i) => 0)
+    .attr("y", (d, i) => i * 20)
+    .style("fill", (d) => d.color);
+
+  rentLegend
+    .selectAll("text")
+    .data(legendData)
+    .join("text")
+    .attr("x", (d, i) => 15)
+    .attr("y", (d, i) => 9 + i * 20)
+    .style("font-size", "12px")
+    .text((d) => d.label);
 }
 
 function updateMealVis() {
@@ -635,7 +715,7 @@ function updateMealVis() {
     ) / fixedFoodPrice,
   ];
 
-  const maxFood = 10;
+  const maxFood = 8;
   const iconSize = 32;
   const yMargin = 22;
 
@@ -670,12 +750,15 @@ function updateMealVis() {
         ev_meal_xScale.bandwidth() / 2 -
         iconSize -
         10 +
-        Math.floor(i / 5) * curIcon.iconSize
+        Math.floor(i / maxFood) * curIcon.iconSize
     )
     .attr(
       "y",
       (d, i) =>
-        mealVisSize.height - ((i % 5) + 1) * yMargin - curIcon.iconSize - 6
+        mealVisSize.height -
+        ((i % maxFood) + 1) * yMargin -
+        curIcon.iconSize -
+        13
     )
     .attr("width", curIcon.iconSize)
     .attr("height", curIcon.iconSize);
@@ -697,12 +780,16 @@ function updateMealVis() {
         ev_meal_xScale.bandwidth() / 2 -
         10 -
         curIcon.iconSize +
-        Math.floor(i / 5) * curIcon.iconSize
+        Math.floor(i / maxFood) * curIcon.iconSize -
+        5
     )
     .attr(
       "y",
       (d, i) =>
-        mealVisSize.height - ((i % 5) + 1) * yMargin - curIcon.iconSize - 6
+        mealVisSize.height -
+        ((i % maxFood) + 1) * yMargin -
+        curIcon.iconSize -
+        13
     )
     .attr("width", curIcon.iconSize)
     .attr("height", curIcon.iconSize);
@@ -801,6 +888,7 @@ function computeLayoutFromContainer() {
   // Meal
   const mealRect = getRect("meal-svg");
   mealVisMargin = getMargin(mealRect);
+  mealVisMargin.bottom -= 20;
   mealVisSize = {
     width: mealRect.width - mealVisMargin.left - mealVisMargin.right,
     height: mealRect.height - mealVisMargin.top - mealVisMargin.bottom,
@@ -846,7 +934,6 @@ function init() {
       rentVisSize.height + rentVisMargin.top + rentVisMargin.bottom
     );
 
-  //아직안함
   mealSvg
     .attr("width", econVisSize.width + econVisMargin.left + econVisMargin.right)
     .attr(
