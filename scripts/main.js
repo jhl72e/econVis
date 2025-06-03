@@ -556,11 +556,18 @@ function updateLppVis() {
 
   const currentLPP = currentIncome;
 
-  const targetLPP = incomeConversion(
+  let targetLPP = incomeConversion(
     currentIncome,
     dataPerNation[currentCountry].coli,
     dataPerNation[targetCountry].coli
   );
+
+  if (targetLPP < currentLPP) {
+    const perceivedChange = cogScale.prospectTheory(
+      (targetLPP - currentLPP) / currentLPP
+    );
+    targetLPP = currentLPP * (1 + perceivedChange);
+  }
 
   const drawData = [currentLPP, targetLPP];
   const additionalGraphMargin = lppVisMargin.left * 0.2;
@@ -636,7 +643,7 @@ function updateLppVis() {
 }
 
 function updateRentVis() {
-  const maxArea = 250;
+  const maxArea = 200;
   const currentArea = currentRentSize;
   const targetArea = rentSizeConversion(
     currentRentSize,
@@ -645,10 +652,13 @@ function updateRentVis() {
   );
 
   const iconSize = rentVisSize.width / 2;
-  const scale = d3.scaleSqrt().domain([0, maxArea]).range([0, iconSize]);
+  //const scale = d3.scaleSqrt().domain([0, maxArea]).range([0, iconSize]);
 
-  const currentSize = scale(currentArea);
-  const targetSize = scale(targetArea);
+  const currentSize = iconSize * cogScale.powerAreaScale(currentArea / maxArea);
+  const targetSize = iconSize * cogScale.powerAreaScale(targetArea / maxArea);
+
+  // const currentSize = scale(currentArea);
+  // const targetSize = scale(targetArea);
 
   const anchorX = rentVisMargin.left / 5;
   const anchorY = rentVisSize.height;
@@ -892,7 +902,7 @@ function computeLayoutFromContainer() {
   // LPP
   const lppRect = getRect("lpp-svg");
   lppVisMargin = getMargin(lppRect);
-  lppVisMargin.left *= 2;
+  lppVisMargin.left *= 3;
   lppVisMargin.right = 0;
   lppVisSize = {
     width: lppRect.width - lppVisMargin.left - lppVisMargin.right,
@@ -926,9 +936,9 @@ function init() {
   mapSvg = d3.select("#map-svg");
   nationInfoSvg = d3.select("#nationinfo-svg");
 
-  lppSvg = d3.select("#lpp-svg");
-  rentSvg = d3.select("#rent-svg");
-  mealSvg = d3.select("#meal-svg");
+  lppSvg = d3.select("#lpp-svg").attr("id", "lppSvgVis");
+  rentSvg = d3.select("#rent-svg").attr("id", "rentSvgVis");
+  mealSvg = d3.select("#meal-svg").attr("id", "mealSvgVis");
 
   mapSvg
     .attr("width", width + mapMargin.left + mapMargin.right)
