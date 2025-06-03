@@ -563,12 +563,12 @@ function updateLppVis() {
   );
 
   const drawData = [currentLPP, targetLPP];
-  const additionalGraphMargin = lppVisMargin.left * 0.1;
+  const additionalGraphMargin = lppVisMargin.left * 0.2;
   const barHeight = 20;
   const xScale = d3
     .scaleLinear()
     .domain([0, Math.max(d3.max(drawData), 20000)])
-    .range([0, width])
+    .range([0, width - lppVisMargin.right])
     .nice();
 
   const yScale = d3
@@ -599,7 +599,7 @@ function updateLppVis() {
       })`
     )
     .call(d3.axisLeft(yScale).ticks(2))
-    .attr("font-size", "11px");
+    .attr("font-size", "0.5em");
 
   ev_lpp_bars
     .selectAll("rect")
@@ -892,6 +892,7 @@ function computeLayoutFromContainer() {
   // LPP
   const lppRect = getRect("lpp-svg");
   lppVisMargin = getMargin(lppRect);
+  lppVisMargin.left *= 2;
   lppVisMargin.right = 0;
   lppVisSize = {
     width: lppRect.width - lppVisMargin.left - lppVisMargin.right,
