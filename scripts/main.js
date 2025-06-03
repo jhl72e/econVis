@@ -180,7 +180,7 @@ function updateMapSection() {
     .on("click", function (event, d) {
       if (dataPerNation[d.properties.name]) {
         targetCountry = d.properties.name;
-        legendData[0].label = targetCountry;
+        legendData[1].label = targetCountry;
         update();
       }
     });
